@@ -1,0 +1,29 @@
+RLE classico:
+legge file, se trova più caratteri uguali consecutivi allora sostituisce l'intera sequenza
+con NC, dove N è il numero di volte che il carattere è stato ripetuto e C è il carattere.
+
+Cose di cui ho bisogno:
+1) file input
+2) file output
+
+    LOGICA PRATICA DELL'ALGORITMO
+3AAABBCD => 33ABBCD => 33A o (3 e 3A)
+Bisogna ragionare su:
+1. lunghezza sequenza minima m e massima M di caratteri consecutivi uguali
+2. carattere non visibile per delineare l'inizio di una codifica a inizio di una sequenza
+3. lunghezza massima della parola: non importante, in quanto scorro con buffer di lunghezza M trovando tutte le sequenze
+
+    LOGICA DEL PROGRAMMA
+Ho bisogno dei seguenti file:
+- compressor.c
+    implementa funzioni di compressione
+
+- decompressor.c
+    implementa funzioni di decompressione
+
+- main.c
+    riceve parametri in input: "-d|-c" "filename.(rle|txt)"
+    comprende se da decomprimere o comprimere in base alle opzioni inserite (-d o -c) => chiamata a decompressor o compressor
+
+- rle.h
+    struct per il passaggio immediato di parametri tra funzioni.
