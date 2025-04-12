@@ -1,27 +1,10 @@
-#include <stdio.h>
-#include <stdlib.h>
 #include "compressor.h"
 
 //suitable cheap boolean handling
 #define true 1
 #define false 0
 
-int rle_compressor_init(RLEContext *ctx, const char *input_path, const char *output_path, size_t buffer_size);
-int rle_compress(RLEContext *ctx);
-void rle_compressor_cleanup(RLEContext *ctx);
-
-int rle_compressor_init(RLEContext *ctx, const char *input_path, const char *output_path, size_t buffer_size){
-    ctx->input=fopen(input_path, "rb");
-    ctx->output=fopen(output_path, "wb");
-    ctx->buffer_size=buffer_size;
-    ctx->buffer=(unsigned char*)malloc(buffer_size);
-    ctx->total_bytes_output=0;
-    ctx->total_bytes_processed=0;
-
-    return 20*(ferror(ctx->input) || ferror(ctx->output));//error code: 20, otherwise 0
-}
-
-int rle_compress(RLEContext* ctx){
+int rle_compress(RLEContext* const ctx){
     //since MAX_RUN_LENGTH is 255, one byte will perfectly fit for the purpose
     __uint8_t count=0;
     //flag used to regulate writing operation on file
@@ -104,17 +87,4 @@ int rle_compress(RLEContext* ctx){
     ctx->total_bytes_output=(ftell(ctx->output)-start_output);
 
     return 21*(ferror(ctx->input) || ferror(ctx->output)); //error code: 21, otherwise 0
-}
-
-void rle_compressor_cleanup(RLEContext *ctx){
-    fclose(ctx->input);
-    fclose(ctx->output);
-    free(ctx->buffer);
-
-    ctx->buffer=NULL;
-    ctx->buffer_size=RLE_DEFAULT_BUFFER_SIZE;
-    ctx->input=NULL;
-    ctx->output=NULL;
-    ctx->total_bytes_output=0;
-    ctx->total_bytes_processed=0;
 }

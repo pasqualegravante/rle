@@ -1,6 +1,5 @@
 #ifndef RLE_H
 #define RLE_H
-
 #include <stdio.h>
 
 #define RLE_DEFAULT_BUFFER_SIZE 8192
