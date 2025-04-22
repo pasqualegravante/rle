@@ -12,8 +12,8 @@ int rle_init(RLEContext *ctx, const char *input_path, const char *output_path, s
 }
 
 void rle_cleanup(RLEContext *ctx){
-    fclose(ctx->input);
     fclose(ctx->output);
+    fclose(ctx->input);
     free(ctx->buffer);
 
     ctx->buffer=NULL;

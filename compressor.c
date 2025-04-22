@@ -6,11 +6,11 @@
 
 int rle_compress(RLEContext* const ctx){
     //since MAX_RUN_LENGTH is 255, one byte will perfectly fit for the purpose
-    __uint8_t count=0;
+    uint8_t count=0;
     //flag used to regulate writing operation on file
     _Bool write = false;
     //adder to keep track of bytes_read
-    size_t bytes_read;
+    uint32_t bytes_read;
 
     const int start_output = ftell(ctx->output);
 

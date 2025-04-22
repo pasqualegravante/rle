@@ -86,11 +86,11 @@ int main(int argc, char* argv[]){
             
             //operation of decompressing the file went well
             if(decompressor_code==0){
-                printf("Successfully compressed.\n");
+                printf("Successfully decompressed.\n");
                 printf("\n-----DECOMPRESSION REPORT-----\n");
                 printf("Bytes processed:   %ld\n", context->total_bytes_processed);
                 printf("Bytes in output:   %ld\n", context->total_bytes_output);
-                printf("Compression rate:  %0.3f%%\n", get_compression_rate(context));
+                printf("Decompression rate:  %0.3f%%\n", get_compression_rate(context));
             }
             else{
                 printf("Error in read/write operation during decompression... try again.\n");
