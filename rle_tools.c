@@ -8,12 +8,12 @@ enum RLEResult rle_init(RLEContext** ctx, const char *input_path, const char *ou
     }
 
     (*ctx)->input=fopen(input_path, "rb");
-    if(ferror((*ctx)->input)!=0){
+    if(ferror((*ctx)->input)){
         return RLE_EOPEN_INPUT;
     }
 
     (*ctx)->output=fopen(output_path, "wb");
-    if(ferror((*ctx)->output)!=0){
+    if(ferror((*ctx)->output)){
         return RLE_EOPEN_OUTPUT;
     }
 
@@ -34,30 +34,31 @@ enum RLEResult rle_init(RLEContext** ctx, const char *input_path, const char *ou
 }
 
 enum RLEResult rle_cleanup(RLEContext** ctx, const _Bool deallocate_file_names){
-    if(fclose((*ctx)->output)!=0){
+    if(fclose((*ctx)->output)){
         return RLE_ECLOSE_OUTPUT;
     }
-    if(fclose((*ctx)->input)!=0){
+    if(fclose((*ctx)->input)){
         return RLE_ECLOSE_INPUT;
     }
 
     free((*ctx)->buffer); //no possible check, only error is it can be freed twice
 
     (*ctx)->buffer=NULL;
-    (*ctx)->buffer_size=RLE_DEFAULT_BUFFER_SIZE;
+    (*ctx)->buffer_size=0;
+
+    /*feature added for test_rle.c, but results in double free of memory
     if(deallocate_file_names!=0){
         free((*ctx)->input);
         free((*ctx)->output);
         (*ctx)->input=NULL;
         (*ctx)->output=NULL;
-    }
+    }*/
+
     (*ctx)->total_bytes_output=0;
     (*ctx)->total_bytes_processed=0;
 
     free(*ctx);
-    //printf("OK dealloc of *ctx\n");
-    //free(ctx);
-    //printf("OK dealloc of ctx\n");
+    *ctx=NULL;
     return RLE_OK;
 }
 
