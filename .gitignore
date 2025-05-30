@@ -1,5 +1,6 @@
+*.out
+
+#PERSONAL FILES
 tmp.md
 test.c
 settings.json
-a.out
-documentation
