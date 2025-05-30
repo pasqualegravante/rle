@@ -38,7 +38,7 @@ int main(int argc, char* argv[]){
         return init_code;
     }
 
-    puts("_RLE_Compressor_and_Decompressor");
+    puts("_RLE_Compressor_and_Decompressor_by_Pasquale_Gravante");
     printf("I'm working on file \'%s\' as input and \'%s\' as output...\n\n", input, output);
     int status=0;
 
