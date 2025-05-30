@@ -4,7 +4,7 @@
 #define true 1
 #define false 0
 
-int rle_compress(RLEContext* const ctx){
+enum RLECompressResult rle_compress(RLEContext* const ctx){
     //since MAX_RUN_LENGTH is 255, one byte will perfectly fit for the purpose
     uint8_t count=0;
     //flag used to regulate writing operation on file
@@ -56,7 +56,7 @@ int rle_compress(RLEContext* const ctx){
                 }
                 //update processed data bytes counter
                 ctx->total_bytes_processed+=count;
-                //count=1 since a new run begins immediately
+
                 count=0;
                 write=false;
             }
@@ -67,7 +67,7 @@ int rle_compress(RLEContext* const ctx){
     //DEBUG printf("\nbytes_read: %ld\n", bytes_read);
 
     if(ctx->total_bytes_processed!=bytes_read){//last write operation missed
-        count=bytes_read-ctx->total_bytes_processed;//number of missed bytes
+        count=bytes_read - ctx->total_bytes_processed;//number of missed bytes
 
         if(count<RLE_MIN_RUN_LENGTH){
             for(int j=0; j<count; j++)
@@ -85,6 +85,42 @@ int rle_compress(RLEContext* const ctx){
     }
     
     ctx->total_bytes_output=(ftell(ctx->output)-start_output);
+    
+    if(ferror(ctx->input)){
+        return RLE_COMPRESS_IO_INPUT;
+    }
 
-    return 21*(ferror(ctx->input) || ferror(ctx->output)); //error code: 21, otherwise 0
+    if(ferror(ctx->output)){
+        return RLE_COMPRESS_IO_OUTPUT;
+    }
+
+    return RLE_COMPRESS_OK;
+}
+
+enum RLECompressResult rle_execute_compression(RLEContext* const ctx){
+    puts("-----COMPRESSION EXECUTION-----");
+    printf("Compressing using %u bytes buffer...\n", ctx->buffer_size);
+    enum RLECompressResult res = rle_compress(ctx);
+    
+    if(res==RLE_COMPRESS_OK){
+        puts("Compression went ok.");
+        return res;
+    }
+
+    printf("Error[Compression] with id %d: ", res);
+    switch (res){
+    case RLE_COMPRESS_IO_INPUT:
+        puts("error at reading input file");
+        break;
+    
+    case RLE_COMPRESS_IO_OUTPUT:
+        puts("error at writing output file");
+        break;
+    
+    default:
+        puts("unknown error");
+        break;
+    }
+
+    return res;
 }
