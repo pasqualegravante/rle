@@ -2,7 +2,7 @@
 #define true 1
 #define false 0
 
-int rle_decompress(RLEContext* const ctx){
+enum RLEDecompressResult rle_decompress(RLEContext* const ctx){
     //reading file header RLE1<Original Size>
     //parsing RLE1 signature
     const int word_len=4;
@@ -12,7 +12,7 @@ int rle_decompress(RLEContext* const ctx){
     if(strncmp(word, RLE_SIGNATURE, word_len)!=0){//maybe later will re-implement strncmp, avoiding importing whole library
         //file not in RLE1 format
         printf("File format %s doesn't match %s\n", word, RLE_SIGNATURE);//DEBUG
-        return 1;
+        return RLE_DECOMPRESS_MISSING_SIGNATURE;
     }
     ctx->total_bytes_processed+=word_len;
 
@@ -54,9 +54,54 @@ int rle_decompress(RLEContext* const ctx){
 
     ctx->total_bytes_output=ftell(ctx->output)-fout_start;
 
-    printf("\nDecompression: %u bytes expected, %u bytes found\n", theoretical_decompressed_file_size, ctx->total_bytes_output);
-    printf((ctx->total_bytes_output==theoretical_decompressed_file_size ? "Decompression went ok\n" : "Some data might be lost\n"));
-    
-    return ctx->total_bytes_output!=theoretical_decompressed_file_size;
+    printf("\n%u/%u bytes found\n", ctx->total_bytes_output, theoretical_decompressed_file_size);
 
+    if(ferror(ctx->input)){
+        return RLE_DECOMPRESS_IO_INPUT;
+    }
+    if(ferror(ctx->output)){
+        return RLE_DECOMPRESS_IO_OUTPUT;
+    }
+
+    if(ctx->total_bytes_output!=theoretical_decompressed_file_size){
+        return RLE_DECOMPRESS_DATA_MAY_BE_LOST;
+    }
+
+    return RLE_DECOMPRESS_OK;
+}
+
+enum RLEDecompressResult rle_execute_decompression(RLEContext* const ctx){
+    puts("-----DECOMPRESSION EXECUTION-----");
+    printf("Decompressing using %u bytes buffer...\n", ctx->buffer_size);
+    enum RLEDecompressResult res = rle_decompress(ctx);
+
+    if(res==RLE_DECOMPRESS_OK){
+        puts("Decompression went ok.");
+        return res;
+    }
+
+    printf("Error[Decompression] with id %d: ", res);
+    switch (res){
+    case RLE_DECOMPRESS_IO_INPUT:
+        puts("error at reading input file");
+        break;
+    
+    case RLE_DECOMPRESS_IO_OUTPUT:
+        puts("error at writing output file");
+        break;
+    
+    case RLE_DECOMPRESS_MISSING_SIGNATURE:
+        puts("error at finding RLE1 signature in input file");
+        break;
+
+    case RLE_DECOMPRESS_DATA_MAY_BE_LOST:
+        puts("decompression executed, but some data might be lost");
+        break;
+    
+    default:
+        puts("unexpected error");
+        break;
+    }
+
+    return res;
 }
