@@ -18,7 +18,7 @@ int main(int argc, char* argv[]){
     const char* input;
     const char* output;
     unsigned int buffer_size;
-    RLEContext* context = (RLEContext*)malloc(sizeof(RLEContext));
+    RLEContext* context;
 
     option = argv[1];
     input  = argv[2];
@@ -26,7 +26,7 @@ int main(int argc, char* argv[]){
     buffer_size = (argc==5 ? atoi(argv[4]) : RLE_DEFAULT_BUFFER_SIZE);
 
     //check if the option is -c or -d
-    if(!(strcmp(option, "-c")==0 || strcmp(option, "-d")==0)){
+    if(strcmp(option, "-c") && strcmp(option, "-d")){
         printf("Invalid option passed \'%s\': Expected -c or -d\n", argv[1]);
         rle_execute_cleanup(&context);
         return -2;
@@ -37,20 +37,8 @@ int main(int argc, char* argv[]){
         rle_execute_cleanup(&context);
         return init_code;
     }
-    /*USELESS BLOCK
-    //check for wrong buffer_size(<=0)
-    if(buffer_size<=0){
-        printf("Invalid buffer_size %d, buffer size can't be less or equal than 0\n", buffer_size);
-        rle_deallocate_resources(context);
-        return 12;
-    }
-    if(buffer_size>RLE_DEFAULT_BUFFER_SIZE){
-        printf("Invalid buffer_size %d, exceeding the default value: %d\n", buffer_size, RLE_DEFAULT_BUFFER_SIZE);
-        rle_deallocate_resources(context);
-        return 12;
-    }*/
 
-    puts("_RLE_Compressor_and_Decompressor_by_Pasquale_Gravante_");
+    puts("_RLE_Compressor_and_Decompressor");
     printf("I'm working on file \'%s\' as input and \'%s\' as output...\n\n", input, output);
     int status=0;
 
@@ -71,6 +59,5 @@ int main(int argc, char* argv[]){
     }
 
     rle_execute_cleanup(&context);
-    printf("Exit code: %d\n", status);
     return status;
 }
