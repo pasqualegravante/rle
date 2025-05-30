@@ -19,7 +19,7 @@ enum RLECompressResult rle_compress(RLEContext* const ctx){
     fseek(ctx->input, 0L, SEEK_END);
     const int end_input = ftell(ctx->input);
     rewind(ctx->input);
-    const int flength_input=end_input-start_input;
+    const uint32_t flength_input=end_input-start_input;
 
     //writing output file header: RLE1<ORIGINAL_BYTE_DIMENSION>
     fwrite(RLE_SIGNATURE, 4, 1, ctx->output);
