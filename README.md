@@ -12,9 +12,9 @@ The project focuses on handling raw data streams, performing I/O operations and 
 - [License](#license)
   
 ## Status
-This project is WIP. The core logic is implemented, now I'm trying to develop new features like:
+This project is WIP. The core logic is implemented and a couple of new features are under development:
 - manual testing
-- possibility of giving different buffer size ot use in I/O operations
+- possibility of giving different buffer size to use in I/O operations
 - when no buffer size is explicitly provided via command line, calculate a smart size instead of using the default one
   
 ## Key learning points
@@ -33,12 +33,12 @@ The file format consists of 8 bytes:
 - 4 bytes: the original file byte-size as a `uint32_t`
 
 This design ensures cross-platform compatibility because:
-- "RLE1" is written in raw ASCII bytes, consistent across major most of OS
+- "RLE1" is written in raw ASCII bytes, consistent across most of OS
 - `uint32_t` forces the file size to be stored as a 4-byte unsigned integer, no matter the architecture
 
 *Note: the file size is at maximum (2^32-1)/2^30\~2^2\~4GB*
 
-However the only issue that persists is endianness, in order to achieve a full platform independence, a conversion must be made when reading/writing the file.
+However the only issue that persists is endianness, in order to achieve a full platform independence a conversion between different endianness must be made when reading/writing the file.
 
 rle.h
 ```C
@@ -221,7 +221,7 @@ BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB
 CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
 DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD
 ```
-Instantly is noticeable that for some reason D's are more than the original file but it has the same size, so the other letters must be less than what is supposed to be,
+Instantly is noticeable that for some reason D's are more than the original file, but the size is kept, consequently also other letters' count is different.
 
 ## Author
 👋 Hi, I’m a first-year Computer Science student passionate about understanding how things work under the hood.  
